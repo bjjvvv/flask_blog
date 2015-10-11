@@ -2,8 +2,8 @@
 
 # vim
 *.swp
-#*.vim
-#.viminfo
+*.vim
+.viminfo
 
 *.ico
 
