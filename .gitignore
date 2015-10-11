@@ -1,6 +1,9 @@
 *.py[cod]
 
+# vim
 *.swp
+#*.vim
+#.viminfo
 
 *.ico
 
