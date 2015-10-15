@@ -15,7 +15,6 @@ def before_request():
             and not current_user.confirmed \
             and request.endpoint[:5] != 'auth.' \
             and request.endpoint != 'static':
-        print('{}未验证。'.format(current_user.username))
         return redirect(url_for('auth.unconfirmed'))
 
 
@@ -63,9 +62,10 @@ def register():
     return render_template('auth/register.html', form=form)
 
 
-@login_required
+
 @auth.route('/confirm/<token>')
-def confirm():
+@login_required
+def confirm(token):
     if current_user.confirmed:
         return redirect(url_for('main.index'))
     if current_user.confirm(token):
