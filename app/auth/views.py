@@ -12,11 +12,12 @@ from ..email import send_email
 
 @auth.before_app_request
 def before_request():
-    if current_user.is_authenticated \
-            and not current_user.confirmed \
-            and request.endpoint[:5] != 'auth.' \
-            and request.endpoint != 'static':
-        return redirect(url_for('auth.unconfirmed'))
+    if current_user.is_authenticated:
+        current_user.ping()
+        if not current_user.confirmed \
+                and request.endpoint[:5] != 'auth.' \
+                and request.endpoint != 'static':
+            return redirect(url_for('auth.unconfirmed'))
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -116,11 +117,11 @@ def password_reset_request():
         if user:
             token = user.generate_reset_token()
             send_email(user.email, 'Reset Your Password',
-                      'auth/email/reset_password',
-                      user=user, token=token,
-                      next=request.args.get('next'))
+                       'auth/email/reset_password',
+                       user=user, token=token,
+                       next=request.args.get('next'))
             flash('An email with instructions to reset your password '
-                    'has been sent to you.')
+                  'has been sent to you.')
             return redirect(url_for('auth.login'))
         flash('This account does not exist')
 
@@ -171,4 +172,3 @@ def change_email(token):
     else:
         flash('Invalid request.')
     return redirect(url_for('main.index'))
-

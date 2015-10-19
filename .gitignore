@@ -1,10 +1,5 @@
 *.py[cod]
 
-# vim
-*.sw[op]
-*.vim
-.viminfo
-
 *.ico
 
 __pycache__/
