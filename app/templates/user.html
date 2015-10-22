@@ -5,6 +5,7 @@
 
 {% block page_content %}
 <div class="page-header">
+    <img class="img-rounded profile-thumbnail" src="{{ user.gravatar() }}"/>
     <h1>{{ user.username }}</h1>
     {% if user.username or user.location %}
     <p>
@@ -24,7 +25,7 @@
             Edit Proflie
         </a>
         {% endif %}
-        {% if current_user.is_administrator %}
+        {% if current_user.is_administrator() %}
         <a class="btn btn-danger"
            href="{{ url_for('.edit_profile_admin', id=user.id) }}">
             Edit Profile [Admin]
