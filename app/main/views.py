@@ -32,8 +32,8 @@ def edit_profile():
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
-    form.location = current_user.location
-    form.about_me = current_user.about_me
+    form.location.data = current_user.location
+    form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', form=form)
 
 
@@ -53,12 +53,12 @@ def edit_profile_admin(id):
         user.about_me = form.about_me.data
         db.session.add(user)
         flash('The profile has been updated')
-        return redirect('.user', username=user.username)
+        return redirect(url_for('.user', username=user.username))
     form.email.data = user.email
-    user.username = form.username.data
-    user.confirmed = form.confirmed.data
-    user.role = Role.query.get(form.role.data)
-    user.name = form.name.data
-    user.location = form.location.data
-    user.about_me = form.about_me.data
+    form.username.data = user.username
+    form.confirmed.data = user.confirmed
+    form.role.data = user.role_id
+    form.name.data = user.name
+    form.location.data = user.location
+    form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)

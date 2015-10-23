@@ -33,7 +33,7 @@ class Role(db.Model):
                           Permission.COMMENT |
                           Permission.WRITE_ARTCLES |
                           Permission.MODERATE_COMMENTS, False),
-            'administrator': (0xff, False)
+            'Administrator': (0xff, False)
         }
         for r in roles:
             role = Role.query.filter_by(name=r).first()
@@ -43,6 +43,17 @@ class Role(db.Model):
             role.default = roles[r][1]
             db.session.add(role)
         db.session.commit()
+
+    def update_user_roles():
+        default_role = Role.query.filter_by(name='User').first()
+        if default_role is None:
+            return None
+        for user in User.query.all():
+            if user.role is None:
+                user.role = default_role
+            db.session.add(user)
+        db.session.commit()
+
 
     def __repr__(self):
         return '<Role %r>' % self.name
