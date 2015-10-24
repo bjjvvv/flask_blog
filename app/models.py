@@ -12,7 +12,7 @@ import hashlib
 class Permission:
     FOLLOW = 0x01
     COMMENT = 0x02
-    WRITE_ARTCLES = 0x04
+    WRITE_ARTICLES = 0x04
     MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
 
@@ -80,6 +80,7 @@ class Role(db.Model):
             db.session.add(role)
         db.session.commit()
 
+    @staticmethod
     def update_user_roles():
         default_role = Role.query.filter_by(name='User').first()
         if default_role is None:
@@ -203,7 +204,7 @@ class User(UserMixin, db.Model):
         if request.is_secure:
             url = 'https://secure.gravatar.com/avatar'
         else:
-            url = 'http://www.gravatar.com/avatar'
+            url = 'http://gravatar.com/avatar'
         hash = self.avatar_hash or hashlib.md5(
             self.email.encode('utf-8')).hexdigest()
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
