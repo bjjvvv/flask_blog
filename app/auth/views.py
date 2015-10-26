@@ -29,7 +29,7 @@ def login():
             login_user(user, form.rember_me.data)
             return redirect(request.args.get('next') or
                             url_for('main.index'))
-        flash('Invalid username or password')
+        flash('Invalid username or password.')
     return render_template('auth/login.html', form=form)
 
 
@@ -53,11 +53,6 @@ def register():
         token = user.generate_confirmation_token()
         send_email(user.email, 'Confirm Your Acount',
                    'auth/email/confirm', user=user, token=token)
-#        except Exception as e:
-#            print('出错了：', e)
-#            db.session.delete(user)
-#            flash('服务器出错了，玩会在场尝试～')
-#            return render_template('auth/register.html', form=form)
         flash('A confirmation email has been sent to you.')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
@@ -88,7 +83,7 @@ def resend_confirm():
     token = current_user.generate_confirmation_token()
     send_email(current_user.email, 'Confirm Your Account',
                'auth/email/confirm', user=current_user, token=token)
-    flash('A new confirmation email has been sent to you by email')
+    flash('A new confirmation email has been sent to you by email.')
     return redirect(url_for('main.index'))
 
 
@@ -123,7 +118,7 @@ def password_reset_request():
             flash('An email with instructions to reset your password '
                   'has been sent to you.')
             return redirect(url_for('auth.login'))
-        flash('This account does not exist')
+        flash('This account does not exist.')
 
     return render_template('auth/reset_password.html', form=form)
 
