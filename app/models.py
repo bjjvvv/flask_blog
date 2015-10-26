@@ -80,17 +80,6 @@ class Role(db.Model):
             db.session.add(role)
         db.session.commit()
 
-    @staticmethod
-    def update_user_roles():
-        default_role = Role.query.filter_by(name='User').first()
-        if default_role is None:
-            return None
-        for user in User.query.all():
-            if user.role is None:
-                user.role = default_role
-            db.session.add(user)
-        db.session.commit()
-
     def __repr__(self):
         return '<Role %r>' % self.name
 
@@ -121,15 +110,15 @@ class User(UserMixin, db.Model):
 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     followed = db.relationship('Follow',
-                                foreign_keys=[Follow.follower_id],
-                                backref=db.backref('follower', lazy='joined'),
+                               foreign_keys=[Follow.follower_id],
+                               backref=db.backref('follower', lazy='joined'),
+                               lazy='dynamic',
+                               cascade='all, delete-orphan')
+    followers = db.relationship('Follow',
+                                foreign_keys=[Follow.followed_id],
+                                backref=db.backref('followed', lazy='joined'),
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
-    followers = db.relationship('Follow',
-                                 foreign_keys=[Follow.followed_id],
-                                 backref=db.backref('followed', lazy='joined'),
-                                 lazy='dynamic',
-                                 cascade='all, delete-orphan')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -141,6 +130,7 @@ class User(UserMixin, db.Model):
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(
                 self.email.encode('utf-8')).hexdigest()
+        self.followed.append(Follow(followed=self))
 
     @property
     def password(self):
@@ -160,7 +150,7 @@ class User(UserMixin, db.Model):
         db.session.add(self)
 
     def follow(self, user):
-        if not self.is_followed_by(user):
+        if not self.is_following(user):
             f = Follow(follower=self, followed=user)
             db.session.add(f)
 
@@ -273,6 +263,25 @@ class User(UserMixin, db.Model):
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
+
+    @staticmethod
+    def update_user_roles():
+        default_role = Role.query.filter_by(name='User').first()
+        if default_role is None:
+            return None
+        for user in User.query.all():
+            if user.role is None:
+                user.role = default_role
+            db.session.add(user)
+        db.session.commit()
+
+    @staticmethod
+    def add_self_follows():
+        for user in User.query.all():
+            if not user.is_following(user):
+                user.follow(user)
+                db.session.add(user)
+                db.session.commit()
 
     def __repr__(self):
         return '<User %r>' % self.username
