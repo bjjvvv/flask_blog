@@ -40,7 +40,7 @@
         <p>
             {% if user == current_user %}
             <a class="btn btn-default" href="{{ url_for('.edit_profile')}}">
-                Edit Proflie
+                Edit Profile
             </a>
             {% endif %}
             {% if current_user.is_administrator() %}
